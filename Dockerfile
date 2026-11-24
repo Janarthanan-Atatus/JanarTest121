@@ -1,26 +1,17 @@
-# INTENTIONALLY INSECURE - FOR SCANNER TESTING ONLY
-# ISSUE: Outdated, end-of-life base image with known CVEs
-FROM node:16-bullseye
-
-# ISSUE: apt-get install without version pinning or --no-install-recommends
-RUN sed -i -e 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g' \
-           -e 's|deb.debian.org/debian|archive.debian.org/debian|g' \
-           -e '/bullseye-updates/d' /etc/apt/sources.list \
-    && apt-get -o Acquire::Check-Valid-Until=false update \
-    && apt-get install -y curl wget netcat
-
+# syntax=docker/dockerfile:1
+FROM node:22-bookworm-slim AS deps
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-# ISSUE: ADD used instead of COPY
-ADD package.json /app/
-RUN npm install
-ADD app.js /app/
-
-# ISSUE: Secrets baked into the image
-COPY config.js /app/config.js
-
-# ISSUE: SSH port exposed
-EXPOSE 22 3000
-
-# ISSUE: Container runs as root (no USER instruction)
+FROM node:22-bookworm-slim
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+COPY --chown=node:node package.json app.js config.js ./
+RUN mkdir -p /app/public && chown node:node /app/public
+USER node
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD ["node", "-e", "require('net').connect(3000,'127.0.0.1').on('connect',()=>process.exit(0)).on('error',()=>process.exit(1))"]
 CMD ["node", "app.js"]

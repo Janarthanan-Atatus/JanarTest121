@@ -1,17 +1,15 @@
-# INTENTIONALLY INSECURE - FOR SCANNER TESTING ONLY
-version: "3"
 services:
   web:
     build: .
     ports:
-      - "3000:3000"
-      - "22:22"
-    # MISCONFIG: privileged container
-    privileged: true
-    # MISCONFIG: host path mounted into the container (including docker socket)
-    volumes:
-      - /:/host
-      - /var/run/docker.sock:/var/run/docker.sock
-    # MISCONFIG: plaintext secret in environment
+      - "127.0.0.1:3000:3000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: [/tmp]
+    # Secrets come from the host environment / an untracked .env file, never from this file.
     environment:
-      - DB_PASSWORD=P@ssw0rd123
+      - JWT_SECRET
+      - DB_HOST
+      - DB_USER
+      - DB_PASSWORD

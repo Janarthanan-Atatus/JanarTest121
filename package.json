@@ -1,19 +1,16 @@
 {
-  "name": "vulnerable-demo",
+  "name": "janar1",
   "version": "1.0.0",
-  "description": "Intentionally vulnerable app for security scanner testing only",
+  "description": "Demo app used for TigerGate security scanning",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
+  "engines": { "node": ">=22" },
   "dependencies": {
-    "express": "4.16.0",
-    "lodash": "4.17.4",
-    "minimist": "1.2.0",
-    "jsonwebtoken": "8.0.0",
-    "axios": "0.18.0",
-    "node-fetch": "2.6.0",
-    "ejs": "2.5.7",
-    "handlebars": "4.0.11"
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.5"
   }
 }

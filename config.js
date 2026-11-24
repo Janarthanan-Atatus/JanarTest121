@@ -1,15 +1,21 @@
-// FAKE credentials for scanner testing only. None of these are real.
+'use strict';
+
+// All configuration comes from the environment. Nothing secret is stored in source.
+function required(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
 module.exports = {
-  // VULNERABILITY: Hardcoded AWS access key (fake, AWS documentation example)
-  AWS_ACCESS_KEY_ID: 'AKIAIOSFODNN7EXAMPLE',
-  AWS_SECRET_ACCESS_KEY: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-
-  // VULNERABILITY: Hardcoded GitHub token (fake)
-  GITHUB_TOKEN: 'ghp_aBcDeFgHiJkLmNoPqRsTuVwXyZaBcDeFgHiJ',
-
-  // VULNERABILITY: Hardcoded Stripe live key (fake)
-  STRIPE_KEY: 'sk_live_FAKEfakeFAKEfake0123456789abcd',
-
-  // VULNERABILITY: Database URL with embedded password (fake)
-  DATABASE_URL: 'postgres://admin:P@ssw0rd123@db.example.com:5432/appdb'
+  PORT: parseInt(process.env.PORT || '3000', 10),
+  JWT_SECRET: required('JWT_SECRET'),
+  DB_HOST: process.env.DB_HOST || 'localhost',
+  DB_USER: required('DB_USER'),
+  DB_PASSWORD: required('DB_PASSWORD'),
+  DB_NAME: process.env.DB_NAME || 'appdb',
+  FILE_ROOT: process.env.FILE_ROOT || '/app/public',
+  CORS_ORIGINS: (process.env.CORS_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean),
 };
