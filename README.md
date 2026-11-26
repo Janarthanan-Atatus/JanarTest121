@@ -6,3 +6,4 @@ Small Express demo app scanned with TigerGate.
 
 Set via environment variables (never commit them): `JWT_SECRET`, `DB_USER`, `DB_PASSWORD`
 (required); `DB_HOST`, `DB_NAME`, `PORT`, `FILE_ROOT`, `CORS_ORIGINS` (optional).
+`ANTHROPIC_API_KEY` is needed for `POST /ask`, which calls Claude.

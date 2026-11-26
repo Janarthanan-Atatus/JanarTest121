@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const mysql = require('mysql2');
 const rateLimit = require('express-rate-limit');
 const config = require('./config');
+const { ask } = require('./ai');
 
 const app = express();
 app.disable('x-powered-by');
@@ -175,6 +176,18 @@ app.get('/admin', requireAuth, (req, res) => {
   res.json({ user: req.user.user });
 });
 
+// AI in use: sends the prompt to Claude. Each call is billed, so it has its own lower rate limit.
+const askLimit = rateLimit({ windowMs: 60 * 1000, limit: 5 });
+app.post('/ask', askLimit, requireAuth, async (req, res) => {
+  const prompt = String((req.body && req.body.prompt) || '').trim();
+  if (!prompt || prompt.length > 2000) return res.status(400).json({ error: 'prompt must be 1-2000 characters' });
+  try {
+    return res.json({ answer: await ask(prompt) });
+  } catch (e) {
+    return res.status(502).json({ error: 'AI request failed' });
+  }
+});
+
 // Only same-site relative redirects are allowed.
 app.get('/redirect', (req, res) => {
   const url = String(req.query.url || '/');
@@ -182,4 +195,6 @@ app.get('/redirect', (req, res) => {
   return res.redirect(url);
 });
 
-app.listen(config.PORT);
+if (require.main === module) app.listen(config.PORT);
+
+module.exports = app;
