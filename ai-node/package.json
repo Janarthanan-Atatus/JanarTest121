@@ -1,0 +1,9 @@
+{
+  "name": "ai-bom-node-fixtures",
+  "private": true,
+  "description": "Old AI packages for AI-BOM scanner testing only. Not used by the app.",
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.9.0",
+    "@langchain/core": "0.1.0"
+  }
+}
