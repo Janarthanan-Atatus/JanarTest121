@@ -1,0 +1,4 @@
+# TEST IMAGE ONLY: old, vulnerable packages to raise the container scan's CVE count. Installed with --no-deps.
+tensorflow-cpu==2.8.0
+Django==3.2.0
+Pillow==9.0.0
